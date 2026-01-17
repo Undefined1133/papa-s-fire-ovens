@@ -1,60 +1,30 @@
 import { useState } from "react";
-import ProductCard from "./ProductCard";
+import { Link } from "react-router-dom";
 import mangal1 from "@/assets/product-mangal-1.jpg";
 import mangal2 from "@/assets/product-mangal-2.jpg";
 import pech1 from "@/assets/product-pech-1.jpg";
 import pech2 from "@/assets/product-pech-2.jpg";
 import pech3 from "@/assets/product-pech-3.jpg";
+import { products, categories } from "@/data/products";
 
-const products = [
-  {
-    id: 1,
-    image: mangal1,
-    title: "Мангал Премиум",
-    category: "Мангалы",
-    description: "Современный мангал из высококачественной стали с удобной конструкцией для профессионального приготовления.",
-    filter: "mangal",
-  },
-  {
-    id: 2,
-    image: pech1,
-    title: "Печь Традиция",
-    category: "Печи",
-    description: "Классическая кирпичная печь для выпечки хлеба и пиццы. Аутентичный дизайн с современными технологиями.",
-    filter: "pech",
-  },
-  {
-    id: 3,
-    image: pech2,
-    title: "Печь Купольная",
-    category: "Печи",
-    description: "Большая садовая печь с куполом для приготовления на открытом воздухе. Включает место для хранения дров.",
-    filter: "pech",
-  },
-  {
-    id: 4,
-    image: mangal2,
-    title: "Мангал Походный",
-    category: "Мангалы",
-    description: "Компактный портативный мангал из нержавеющей стали. Идеален для пикников и выездов на природу.",
-    filter: "mangal",
-  },
-  {
-    id: 5,
-    image: pech3,
-    title: "Печь Декоративная",
-    category: "Печи",
-    description: "Уличная печь с художественной ковкой и орнаментом. Станет украшением любого сада.",
-    filter: "pech",
-  },
-];
+const productImages: Record<string, string> = {
+  "/product-mangal-1.jpg": mangal1,
+  "/product-mangal-2.jpg": mangal2,
+  "/product-pech-1.jpg": pech1,
+  "/product-pech-2.jpg": pech2,
+  "/product-pech-3.jpg": pech3,
+};
 
 const CatalogSection = () => {
   const [filter, setFilter] = useState<"all" | "mangal" | "pech">("all");
 
   const filteredProducts = products.filter((product) => 
-    filter === "all" ? true : product.filter === filter
+    filter === "all" ? true : product.categoryId === filter
   );
+
+  const getCategorySlug = (categoryId: string) => {
+    return categories.find((c) => c.id === categoryId)?.slug || "";
+  };
 
   return (
     <section id="catalog" className="py-24 bg-gradient-dark">
@@ -97,15 +67,70 @@ const CatalogSection = () => {
         {/* Products Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {filteredProducts.map((product) => (
-            <div key={product.id} className="animate-scale-in">
-              <ProductCard
-                image={product.image}
-                title={product.title}
-                category={product.category}
-                description={product.description}
-              />
-            </div>
+            <Link
+              key={product.id}
+              to={`/catalog/${getCategorySlug(product.categoryId)}/${product.slug}`}
+              className="group relative overflow-hidden rounded-xl bg-card border border-border shadow-card hover:shadow-glow transition-all duration-500 animate-scale-in"
+            >
+              {/* Image Container */}
+              <div className="relative aspect-square overflow-hidden">
+                <img
+                  src={productImages[product.image]}
+                  alt={product.title}
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent opacity-60" />
+                
+                {/* Category Badge */}
+                <div className="absolute top-4 left-4">
+                  <span className="px-3 py-1 bg-primary/90 text-primary-foreground text-xs font-semibold rounded-full uppercase tracking-wide">
+                    {categories.find((c) => c.id === product.categoryId)?.title}
+                  </span>
+                </div>
+              </div>
+
+              {/* Content */}
+              <div className="p-6">
+                <h3 className="font-serif text-xl font-semibold text-foreground mb-2 group-hover:text-primary transition-colors">
+                  {product.title}
+                </h3>
+                <p className="text-muted-foreground text-sm leading-relaxed line-clamp-2">
+                  {product.description}
+                </p>
+                
+                {/* Quick specs preview */}
+                <div className="mt-3 grid grid-cols-2 gap-2">
+                  {product.specs.slice(0, 2).map((spec) => (
+                    <div key={spec.label} className="text-xs">
+                      <span className="text-muted-foreground">{spec.label}:</span>
+                      <span className="text-foreground ml-1 font-medium">{spec.value}</span>
+                    </div>
+                  ))}
+                </div>
+                
+                {/* Hover Action */}
+                <div className="mt-4 flex items-center gap-2 text-primary font-medium opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all duration-300">
+                  <span>Подробнее</span>
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                  </svg>
+                </div>
+              </div>
+            </Link>
           ))}
+        </div>
+
+        {/* View All Button */}
+        <div className="text-center mt-12">
+          <Link
+            to="/catalog"
+            className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-fire text-primary-foreground font-semibold rounded-xl shadow-fire hover:shadow-glow transition-all"
+          >
+            Смотреть весь каталог
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+            </svg>
+          </Link>
         </div>
       </div>
     </section>
