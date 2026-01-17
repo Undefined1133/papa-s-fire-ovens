@@ -1,7 +1,7 @@
 import { useParams, Link, Navigate } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import { getCategoryBySlug, getProductsByCategory, categories } from "@/data/products";
+import { getCategoryBySlug, getProductTypesByCategory, categories } from "@/data/products";
 import mangal1 from "@/assets/product-mangal-1.jpg";
 import mangal2 from "@/assets/product-mangal-2.jpg";
 import pech1 from "@/assets/product-pech-1.jpg";
@@ -24,7 +24,7 @@ const CategoryPage = () => {
     return <Navigate to="/catalog" replace />;
   }
 
-  const products = getProductsByCategory(category.id);
+  const productTypes = getProductTypesByCategory(category.id);
 
   return (
     <div className="min-h-screen bg-background">
@@ -51,7 +51,7 @@ const CategoryPage = () => {
           <div className="container mx-auto px-6">
             <div className="text-center mb-12">
               <span className="text-primary text-sm font-semibold uppercase tracking-widest mb-4 block">
-                {category.title}
+                Типы изделий
               </span>
               <h1 className="font-serif text-4xl md:text-5xl font-bold text-foreground mb-6">
                 {category.title}
@@ -61,47 +61,49 @@ const CategoryPage = () => {
               </p>
             </div>
 
-            {/* Products Grid */}
+            {/* Product Types Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {products.map((product) => (
+              {productTypes.map((productType) => (
                 <Link
-                  key={product.id}
-                  to={`/catalog/${categorySlug}/${product.slug}`}
+                  key={productType.id}
+                  to={`/catalog/${categorySlug}/${productType.slug}`}
                   className="group relative overflow-hidden rounded-xl bg-card border border-border shadow-card hover:shadow-glow transition-all duration-500"
                 >
                   {/* Image */}
-                  <div className="relative aspect-square overflow-hidden">
+                  <div className="relative aspect-[4/3] overflow-hidden">
                     <img
-                      src={productImages[product.image]}
-                      alt={product.title}
+                      src={productImages[productType.image]}
+                      alt={productType.title}
                       className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent opacity-60" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-background via-background/30 to-transparent" />
+                    
+                    {/* Works count badge */}
+                    <div className="absolute top-4 right-4">
+                      <span className="px-3 py-1 bg-primary/90 text-primary-foreground text-xs font-semibold rounded-full">
+                        {productType.works.length} работ
+                      </span>
+                    </div>
                   </div>
 
                   {/* Content */}
                   <div className="p-6">
-                    <h3 className="font-serif text-xl font-semibold text-foreground mb-2 group-hover:text-primary transition-colors">
-                      {product.title}
+                    <h3 className="font-serif text-2xl font-semibold text-foreground mb-3 group-hover:text-primary transition-colors">
+                      {productType.title}
                     </h3>
-                    <p className="text-muted-foreground text-sm leading-relaxed line-clamp-2">
-                      {product.description}
+                    <p className="text-muted-foreground text-sm leading-relaxed line-clamp-2 mb-4">
+                      {productType.description}
                     </p>
-                    
-                    {/* Quick specs preview */}
-                    <div className="mt-4 grid grid-cols-2 gap-2">
-                      {product.specs.slice(0, 2).map((spec) => (
-                        <div key={spec.label} className="text-xs">
-                          <span className="text-muted-foreground">{spec.label}:</span>
-                          <span className="text-foreground ml-1">{spec.value}</span>
-                        </div>
-                      ))}
-                    </div>
 
                     {/* Hover Action */}
-                    <div className="mt-4 flex items-center gap-2 text-primary font-medium opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all duration-300">
-                      <span>Подробнее</span>
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div className="flex items-center gap-2 text-primary font-medium">
+                      <span>Смотреть работы</span>
+                      <svg 
+                        className="w-4 h-4 transform group-hover:translate-x-2 transition-transform" 
+                        fill="none" 
+                        stroke="currentColor" 
+                        viewBox="0 0 24 24"
+                      >
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                       </svg>
                     </div>
