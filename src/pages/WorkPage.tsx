@@ -3,7 +3,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import { getProductBySlug, getCategoryBySlug, getProductsByCategory } from "@/data/products";
+import { getWorkBySlug, getProductTypeBySlug, getCategoryBySlug } from "@/data/products";
 import mangal1 from "@/assets/product-mangal-1.jpg";
 import mangal2 from "@/assets/product-mangal-2.jpg";
 import pech1 from "@/assets/product-pech-1.jpg";
@@ -18,22 +18,21 @@ const productImages: Record<string, string> = {
   "/product-pech-3.jpg": pech3,
 };
 
-const ProductPage = () => {
-  const { categorySlug, productSlug } = useParams();
-  const product = getProductBySlug(productSlug || "");
+const WorkPage = () => {
+  const { categorySlug, productTypeSlug, workSlug } = useParams();
+  const work = getWorkBySlug(productTypeSlug || "", workSlug || "");
+  const productType = getProductTypeBySlug(productTypeSlug || "");
   const category = getCategoryBySlug(categorySlug || "");
   const [copied, setCopied] = useState(false);
 
-  if (!product || !category) {
+  if (!work || !productType || !category) {
     return <Navigate to="/catalog" replace />;
   }
 
-  const relatedProducts = getProductsByCategory(category.id)
-    .filter((p) => p.id !== product.id)
-    .slice(0, 3);
+  const otherWorks = productType.works.filter((w) => w.id !== work.id);
 
   const copySpecs = () => {
-    const specsText = `${product.title}\n\n${product.specs
+    const specsText = `${work.title}\n\n${work.specs
       .map((spec) => `${spec.label}:\n${spec.value}`)
       .join("\n\n")}`;
     
@@ -63,40 +62,44 @@ const ProductPage = () => {
               {category.title}
             </Link>
             <span className="text-muted-foreground">/</span>
-            <span className="text-foreground">{product.title}</span>
+            <Link to={`/catalog/${categorySlug}/${productTypeSlug}`} className="text-muted-foreground hover:text-primary transition-colors">
+              {productType.title}
+            </Link>
+            <span className="text-muted-foreground">/</span>
+            <span className="text-foreground">{work.title}</span>
           </nav>
         </div>
 
-        {/* Product Details */}
+        {/* Work Details */}
         <section className="py-12 bg-gradient-dark">
           <div className="container mx-auto px-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-              {/* Product Image */}
+              {/* Work Image */}
               <div className="relative">
                 <div className="aspect-square rounded-2xl overflow-hidden shadow-card">
                   <img
-                    src={productImages[product.image]}
-                    alt={product.title}
+                    src={productImages[work.image]}
+                    alt={work.title}
                     className="w-full h-full object-cover"
                   />
                 </div>
                 
-                {/* Category Badge */}
+                {/* Type Badge */}
                 <div className="absolute top-4 left-4">
                   <span className="px-4 py-2 bg-primary text-primary-foreground text-sm font-semibold rounded-full uppercase tracking-wide">
-                    {category.title}
+                    {productType.title}
                   </span>
                 </div>
               </div>
 
-              {/* Product Info */}
+              {/* Work Info */}
               <div>
                 <h1 className="font-serif text-4xl md:text-5xl font-bold text-foreground mb-4">
-                  {product.title}
+                  {work.title}
                 </h1>
                 
                 <p className="text-muted-foreground text-lg leading-relaxed mb-8">
-                  {product.description}
+                  {work.description}
                 </p>
 
                 {/* Specifications Card */}
@@ -121,14 +124,14 @@ const ProductPage = () => {
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
                           </svg>
-                          Копировать
+                          Копировать ↓
                         </>
                       )}
                     </button>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {product.specs.map((spec, index) => (
+                    {work.specs.map((spec, index) => (
                       <div
                         key={spec.label}
                         className={`p-4 rounded-lg ${
@@ -152,7 +155,7 @@ const ProductPage = () => {
                     href="/#contact"
                     className="flex-1 px-8 py-4 bg-gradient-fire text-primary-foreground font-semibold rounded-xl shadow-fire hover:shadow-glow transition-all text-center"
                   >
-                    Заказать
+                    Заказать такой же
                   </a>
                   <a
                     href="tel:+79991234567"
@@ -167,37 +170,50 @@ const ProductPage = () => {
               </div>
             </div>
 
-            {/* Related Products */}
-            {relatedProducts.length > 0 && (
+            {/* Other Works in this type */}
+            {otherWorks.length > 0 && (
               <div className="mt-20">
                 <h2 className="font-serif text-3xl font-bold text-foreground mb-8 text-center">
-                  Похожие изделия
+                  Другие работы: {productType.title}
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                  {relatedProducts.map((relatedProduct) => (
+                  {otherWorks.map((otherWork) => (
                     <Link
-                      key={relatedProduct.id}
-                      to={`/catalog/${categorySlug}/${relatedProduct.slug}`}
+                      key={otherWork.id}
+                      to={`/catalog/${categorySlug}/${productTypeSlug}/${otherWork.slug}`}
                       className="group relative overflow-hidden rounded-xl bg-card border border-border shadow-card hover:shadow-glow transition-all duration-500"
                     >
                       <div className="relative aspect-square overflow-hidden">
                         <img
-                          src={productImages[relatedProduct.image]}
-                          alt={relatedProduct.title}
+                          src={productImages[otherWork.image]}
+                          alt={otherWork.title}
                           className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                         />
-                        <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent opacity-60" />
-                      </div>
-                      <div className="p-6">
-                        <h3 className="font-serif text-xl font-semibold text-foreground group-hover:text-primary transition-colors">
-                          {relatedProduct.title}
-                        </h3>
+                        <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent opacity-80" />
+                        <div className="absolute bottom-0 left-0 right-0 p-6">
+                          <h3 className="font-serif text-xl font-semibold text-foreground group-hover:text-primary transition-colors">
+                            {otherWork.title}
+                          </h3>
+                        </div>
                       </div>
                     </Link>
                   ))}
                 </div>
               </div>
             )}
+
+            {/* Back to product type */}
+            <div className="mt-12 text-center">
+              <Link
+                to={`/catalog/${categorySlug}/${productTypeSlug}`}
+                className="inline-flex items-center gap-2 px-6 py-3 bg-muted text-foreground rounded-lg hover:bg-primary hover:text-primary-foreground transition-all"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16l-4-4m0 0l4-4m-4 4h18" />
+                </svg>
+                Все работы {productType.title}
+              </Link>
+            </div>
           </div>
         </section>
       </main>
@@ -207,4 +223,4 @@ const ProductPage = () => {
   );
 };
 
-export default ProductPage;
+export default WorkPage;
