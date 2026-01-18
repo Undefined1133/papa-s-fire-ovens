@@ -18,7 +18,7 @@ const Footer = () => {
 
           {/* Copyright */}
           <p className="text-muted-foreground text-sm text-center">
-            © 2024 Мангалы и Печи. Все права защищены.
+            © 2026 Мангалы и Печи. Все права защищены.
           </p>
 
           {/* Social Links */}

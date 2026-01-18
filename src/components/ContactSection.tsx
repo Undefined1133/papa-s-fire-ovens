@@ -35,13 +35,13 @@ const ContactSection = () => {
 
             {/* Contact Details */}
             <div className="space-y-6">
-              <a href="tel:+79001234567" className="flex items-center gap-4 group">
+              <a href="tel:+37379217763" className="flex items-center gap-4 group">
                 <div className="w-14 h-14 rounded-xl bg-muted flex items-center justify-center group-hover:bg-gradient-fire transition-all">
                   <Phone className="w-6 h-6 text-primary group-hover:text-primary-foreground transition-colors" />
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">Телефон</p>
-                  <p className="text-lg font-medium text-foreground">+7 (900) 123-45-67</p>
+                  <p className="text-lg font-medium text-foreground">+373 (79) 21 77 63</p>
                 </div>
               </a>
 
@@ -54,16 +54,6 @@ const ContactSection = () => {
                   <p className="text-lg font-medium text-foreground">info@mangaly.ru</p>
                 </div>
               </a>
-
-              <div className="flex items-center gap-4">
-                <div className="w-14 h-14 rounded-xl bg-muted flex items-center justify-center">
-                  <MapPin className="w-6 h-6 text-primary" />
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">Адрес мастерской</p>
-                  <p className="text-lg font-medium text-foreground">г. Москва, Московская область</p>
-                </div>
-              </div>
             </div>
           </div>
 
@@ -98,7 +88,7 @@ const ContactSection = () => {
                   value={formData.phone}
                   onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                   className="w-full px-4 py-3 bg-muted border border-border rounded-lg text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
-                  placeholder="+7 (___) ___-__-__"
+                  placeholder="+373 (___) ___-__-__"
                   required
                 />
               </div>

@@ -35,7 +35,7 @@ const Header = () => {
           {/* CTA Button */}
           <div className="hidden md:flex items-center gap-4">
             <a 
-              href="tel:+79001234567" 
+              href="tel:+37379217763" 
               className="flex items-center gap-2 px-5 py-2.5 bg-gradient-fire text-primary-foreground rounded-lg font-medium hover:opacity-90 transition-opacity shadow-fire"
             >
               <Phone className="w-4 h-4" />
